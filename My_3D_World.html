@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Landscape</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // Set up the scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        // Add orbit controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        // Add light sources
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 7.5).normalize();
+        scene.add(directionalLight);
+        // Create the ground
+        const groundGeometry = new THREE.PlaneGeometry(500, 500);
+        const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.5;
+        scene.add(ground);
+        // Create the lake
+        const lakeGeometry = new THREE.CircleGeometry(50, 64);
+        const lakeMaterial = new THREE.MeshPhongMaterial({ color: 0x1E90FF });
+        const lake = new THREE.Mesh(lakeGeometry, lakeMaterial);
+        lake.rotation.x = -Math.PI / 2;
+        lake.position.y = -0.49;
+        scene.add(lake);
+        // Function to create a simple cottage
+        function createCottage(x, z) {
+            const cottage = new THREE.Group();
+            // Base
+            const baseGeometry = new THREE.BoxGeometry(10, 5, 10);
+            const baseMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 2.5;
+            cottage.add(base);
+            // Roof
+            const roofGeometry = new THREE.ConeGeometry(7, 4, 4);
+            const roofMaterial = new THREE.MeshPhongMaterial({ color: 0xA52A2A });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.position.y = 7;
+            roof.rotation.y = Math.PI / 4;
+            cottage.add(roof);
+            cottage.position.set(x, 0, z);
+            scene.add(cottage); // Add the cottage to the scene
+        }
+        // Function to create a simple tree
+        function createTree(x, y, z) {
+            const tree = new THREE.Group();
+            // Trunk
+            const trunkGeometry = new THREE.CylinderGeometry(1, 1, 10, 8);
+            const trunkMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+            const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+            trunk.position.y = 5;
+            tree.add(trunk);
+            // Foliage
+            const foliageGeometry = new THREE.SphereGeometry(5, 8, 8);
+            const foliageMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 });
+            const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
+            foliage.position.y = 15;
+            tree.add(foliage);
+            tree.position.set(x, y, z);
+            scene.add(tree);
+        }
+        // Add cottages around the lake
+        createCottage(-60, -10);
+        createCottage(-30, 40);
+        createCottage(30, -40);
+        createCottage(60, 10);
+        // Add a forest around the scene
+        for (let i = 0; i < 100; i++) {
+            const x = (Math.random() - 0.5) * 400;
+            const z = (Math.random() - 0.5) * 400;
+            createTree(x, 0, z);
+        }
+        // Position the camera
+        camera.position.set(100, 100, 100);
+        camera.lookAt(0, 0, 0);
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
+
+    </script>
+</body>
+</html>
